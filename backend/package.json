@@ -2,13 +2,20 @@
   "name": "p6-monvieuxgrimoire",
   "version": "0.0.1",
   "description": "Projet 6: Développez le back-end d'un site de notation de livres.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.1.0"
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.2",
+    "mongoose-unique-validator": "^5.0.0",
+    "multer": "^2.0.2",
+    "sharp": "^0.34.4"
   }
 }

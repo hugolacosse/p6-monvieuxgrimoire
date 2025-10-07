@@ -1,0 +1,1 @@
+Voir les README dans frontend/ et backend/.
