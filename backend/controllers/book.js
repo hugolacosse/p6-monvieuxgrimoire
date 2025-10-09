@@ -85,7 +85,7 @@ exports.getBookById = (req, res, next) => {
         });
 }
 
-const deleteTemporaryFile = (filename) => {
+const deleteNewFile = (filename) => {
     fs.unlink(filename, (err) => {
         if (err) {
             console.log("ERROR PUT /api/books");
@@ -100,54 +100,49 @@ exports.modifyBook = (req, res, next) => {
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
 
-    
+    if (bookObject?.title == "" || bookObject?.author == "" || bookObject?.year == "" || bookObject?.genre == "") {
+        if (req.file) {
+            deleteNewFile(`images/${req.file.filename}`); // new image was saved but
+        }
+        return res.status(400).json({message: 'INVALID FORM.'});
+    }
+
     delete bookObject._userId;
     Book.findOne({_id: req.params.id})
         .then((book) => {
             if (!book) {
                 if (req.file) {
-                    deleteTemporaryFile(`/images/${req.file.filename}`) // new image was saved but
+                    deleteNewFile(`images/${req.file.filename}`) // new image was saved but
                 }
                 return res.status(404).json({message: 'BOOK NOT FOUND.'});
             }
             if (book.userId != req.auth.userId) {
                 if (req.file) {
-                    deleteTemporaryFile(`/images/${req.file.filename}`) // new image was saved but
+                    deleteNewFile(`images/${req.file.filename}`) // new image was saved but
                 }
                 return res.status(401).json({message : 'NOT AUTHORIZED.'});
             }
 
-            if (req.file) {
-                const filename = book.imageUrl.split('/images/')[1];
-                fs.unlink(`images/${filename}`, (err) => {
-                    if (err) {
-                        deleteTemporaryFile(`/images/${req.file.filename}`) // new image was saved but
-                        // console.log("ERROR PUT /api/books/:id");
-                        return res.status(500).json({message: 'INTERNAL SERVER ERROR'});
+            const oldFilename = book.imageUrl.split('/images/')[1];
+            Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
+                .then(() => {
+                    if (req.file) {
+                        fs.unlink(`images/${oldFilename}`, (err) => {});
                     }
-                    Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-                        .then(() => { res.status(200).json({message: 'Objet modifié!'}) })
-                        .catch(error => {
-                            deleteTemporaryFile(`/images/${req.file.filename}`) // new image was saved but
-                            if (error?.name && error.name === "ValidationError") {
-                                return res.status(400).json({message: 'INVALID FORM.'});
-                            }
-                            // console.log("ERROR PUT /api/books/:id");
-                            res.status(500).json({message: 'INTERNAL SERVER ERROR'});
-                        });
+                    res.status(200).json({message: 'Objet modifié!'})
+                })
+                .catch(error => {
+                    if (req.file) {
+                        deleteNewFile(`images/${req.file.filename}`)
+                    }
+                    if (error?.name && (error.name === "ValidationError" || error.name === "CastError")) {
+                        return res.status(400).json({message: 'INVALID FORM.'});
+                    }
+                    // console.log("ERROR PUT /api/books/:id");
+                    res.status(500).json({message: 'INTERNAL SERVER ERROR'});
                 });
-            } else {
-                Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-                    .then(() => { res.status(200).json({message: 'Objet modifié!'}) })
-                    .catch(error => {
-                        if (error?.name && error.name === "ValidationError") {
-                            return res.status(400).json({message: 'INVALID FORM.'});
-                        }
-                        // console.log("ERROR PUT /api/books/:id");
-                        res.status(500).json({message: 'INTERNAL SERVER ERROR'});
-                    });
-            }
         }).catch((error) => {
+            deleteNewFile(`images/${req.file.filename}`);
             // console.log("ERROR PUT /api/books/:id");
             res.status(500).json({message: 'INTERNAL SERVER ERROR'})
         });
@@ -168,7 +163,8 @@ exports.deleteBook = (req, res, next) => {
             
             const filename = book.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, (err) => {
-                if (err) {
+                // ENOENT = possible file lost in the images folder
+                if (err && err.code !== 'ENOENT') {
                     // console.log("ERROR DELETE /api/books/:id");
                     return res.status(500).json({message: 'INTERNAL SERVER ERROR'});
                 }
