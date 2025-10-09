@@ -21,6 +21,11 @@ module.exports = async (req, res, next) => {
         req.file.filename = ref;
         next();
      } catch(error) {
-        res.status(500).json({error});
+        if (error.message === 'Input buffer contains unsupported image format') {
+            res.status(400).json({message:'INVALID IMAGE.'});
+        } else {
+            // console.log("ERROR SHARP");
+            res.status(500).json({message:'INTERNAL SERVER ERROR.'});
+        }
      }
  };

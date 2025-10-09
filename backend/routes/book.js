@@ -14,6 +14,9 @@ router.post('/', auth, multer, sharp, bookController.createBook);
 // get all books
 router.get('/', bookController.getBooks);
 
+// get best rated books
+router.get('/bestrating', bookController.getBestrating);
+
 // get a book
 router.get('/:id', bookController.getBookById);
 
@@ -25,8 +28,5 @@ router.delete('/:id', auth, bookController.deleteBook);
 
 // create a grade
 router.post('/:id/rating', auth, bookController.createRating);
-
-// get best rated books
-router.get('/bestrating', bookController.getBestrating);
 
 module.exports = router;

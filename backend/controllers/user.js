@@ -3,16 +3,13 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 
-
 exports.signup = (req, res, next) => {
     let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!req?.body?.email || !req?.body?.password) {
-        res.status(400).json({ message: 'Invalid form.'}); // CURL (no email or password)
-        return ;    
+        return res.status(400).json({message: 'INVALID FORM.'});   
     }
     if (!req.body.email.match(regex)) {
-        res.status(400).json({ message: 'Invalid email address.'}); // CURL (wrong email)
-        return ;
+        return res.status(400).json({message: 'INVALID EMAIL ADDRESS.'});
     }
 
     bcrypt.hash(req.body.password, 10)
@@ -20,28 +17,34 @@ exports.signup = (req, res, next) => {
             const user = new User({email: req.body.email, password: hash});
             user.save()
                 .then(() => {
-                    res.status(201).json({ message: 'string'}); // CURL (OK)
-                }).catch((error) => { res.status(400).json({error}) }); // CURL (email exist)
-        }).catch((error) => { res.status(500).json({error}) });
+                    res.status(201).json({message: 'SIGNUP SUCCESS.'});
+                }).catch((error) => {
+                    if (error?.name && error.name === "ValidationError") {
+                        return res.status(400).json({message: 'INVALID FORM.'});
+                    }
+                    // console.log("ERROR /api/auth/signup");
+                    res.status(500).json({message:'INTERNAL SERVER ERROR.'})
+                });
+        }).catch((error) => {
+            // console.log("ERROR /api/auth/signup");
+            res.status(500).json({message:'INTERNAL SERVER ERROR.'})
+        });
 }
 
 exports.login = (req, res, next) => {
     if (!req?.body?.email || !req?.body?.password) {
-        res.status(400).json({ message: 'Invalid form.'}); // CURL (no email or password)
-        return ;
+        return res.status(400).json({message: 'INVALID FORM.'});
     }
 
     User.findOne({email: req.body.email})
         .then((user) => {
             if (user === null) {
-                res.status(401).json({message: 'Email or password is incorrect.'}); // CURL (wrong email)
-                return ;
+                return res.status(400).json({message: 'INVALID EMAIL OR PASSWORD.'});
             } else {
                 bcrypt.compare(req.body.password, user.password)
                     .then((valid) => {
                         if (!valid) {
-                            res.status(401).json({message: 'Email or password is incorrect.'}); // CURL (wrong pass)
-                            return ;
+                            return res.status(400).json({message: 'INVALID EMAIL OR PASSWORD.'});
                         }
                         res.status(200).json({
                                 userId: user._id,
@@ -49,9 +52,15 @@ exports.login = (req, res, next) => {
                                     { userId: user._id },
                                     process.env.JWT_SECRET,
                                     { expiresIn: '24h'}
-                                )
-                        });   // CURL (OK)
-                    }).catch((error) => { res.status(500).json({error}) })
+                                ),
+                        });
+                    }).catch((error) => {
+                        // console.log("ERROR /api/auth/login");
+                        res.status(500).json({message:'INTERNAL SERVER ERROR.'});
+                    });
             }
-        }).catch((error) => { res.status(500).json({error}) });
+        }).catch((error) => {
+            // console.log("ERROR /api/auth/login");
+            res.status(500).json({message:'INTERNAL SERVER ERROR.'});
+        });
 }

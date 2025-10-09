@@ -8,8 +8,12 @@ dotenv.config();
 const mongoose = require('mongoose');
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 mongoose.connect(process.env.DB_URI, clientOptions)
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+    .then(() => console.log('Connexion à MongoDB réussie !'))
+    .catch(() => {
+        console.log('La connexion à MongoDB a échouée !');
+        console.log('Utilisez une autre base de données !');
+        process.exit(1);
+    });
 
 // create express app and middlewares 
 const express = require('express');
