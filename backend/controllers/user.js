@@ -23,7 +23,7 @@ exports.signup = (req, res, next) => {
         })
         .catch((error) => {
           if (error?.name && error.name === "ValidationError") {
-            return res.status(400).json({ message: "INVALID FORM." });
+            return res.status(400).json({ message: error.message });
           }
           // console.log("ERROR /api/auth/signup");
           res.status(500).json({ message: "INTERNAL SERVER ERROR." });

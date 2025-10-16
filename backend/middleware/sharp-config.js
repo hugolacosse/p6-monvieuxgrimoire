@@ -7,8 +7,16 @@ module.exports = async (req, res, next) => {
     }
     const { buffer, originalname } = req.file;
 
-    const name = originalname.split(" ").join("_");
-    const ref = `${Date.now()}-${name}.webp`;
+    let name = originalname.split(" ").join("_");
+
+    let arr = name.split(".");
+    if (arr.length > 1) {
+      arr.pop();
+    }
+    arr.push("webp");
+    name = arr.join(".");
+
+    const ref = `${Date.now()}-${name}`;
 
     await sharp(buffer)
       .resize(800, 800, {

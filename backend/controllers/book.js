@@ -6,7 +6,11 @@ const Book = require("../models/Book");
 // create a book
 exports.createBook = (req, res, next) => {
   if (!req?.body?.book || !req?.file) {
-    return res.status(400).json({ message: "INVALID FORM." });
+    if (req.file) {
+      deleteNewFile(`images/${req.file.filename}`); // new image was saved but
+      return res.status(400).json({ message: "INVALID FORM." });
+    }
+    return res.status(400).json({ message: "Vous devez ajouter une image." });
   }
 
   try {
@@ -28,13 +32,15 @@ exports.createBook = (req, res, next) => {
         res.status(201).json({ message: "Objet enregistré !" }); // CURL + SPEC
       })
       .catch((error) => {
+        deleteNewFile(`images/${req.file.filename}`); // new image was saved but
         if (error?.name && error.name === "ValidationError") {
-          return res.status(400).json({ message: "INVALID FORM." });
+          return res.status(400).json({ message: error.message });
         }
         //console.log("ERROR POST /api/books");
         res.status(500).json({ message: "INTERNAL SERVER ERROR" });
       });
   } catch (error) {
+    deleteNewFile(`images/${req.file.filename}`); // new image was saved but
     //console.log("ERROR POST /api/books");
     res.status(500).json({ message: "INTERNAL SERVER ERROR" });
   }
@@ -117,7 +123,9 @@ exports.modifyBook = (req, res, next) => {
     if (req.file) {
       deleteNewFile(`images/${req.file.filename}`); // new image was saved but
     }
-    return res.status(400).json({ message: "INVALID FORM." });
+    return res
+      .status(400)
+      .json({ message: "Book validation failed: Empty field." });
   }
 
   delete bookObject._userId;
@@ -155,7 +163,7 @@ exports.modifyBook = (req, res, next) => {
             error?.name &&
             (error.name === "ValidationError" || error.name === "CastError")
           ) {
-            return res.status(400).json({ message: "INVALID FORM." });
+            return res.status(400).json({ message: error.message });
           }
           // console.log("ERROR PUT /api/books/:id");
           res.status(500).json({ message: "INTERNAL SERVER ERROR" });
