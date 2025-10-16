@@ -1,32 +1,32 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // middlewares
-const auth = require('../middleware/auth');
-const multer = require('../middleware/multer-config');
-const sharp = require('../middleware/sharp-config');
+const auth = require("../middleware/auth");
+const multer = require("../middleware/multer-config");
+const sharp = require("../middleware/sharp-config");
 
-const bookController = require('../controllers/book');
+const bookController = require("../controllers/book");
 
 // create a book
-router.post('/', auth, multer, sharp, bookController.createBook);
+router.post("/", auth, multer, sharp, bookController.createBook);
 
 // get all books
-router.get('/', bookController.getBooks);
+router.get("/", bookController.getBooks);
 
 // get best rated books
-router.get('/bestrating', bookController.getBestrating);
+router.get("/bestrating", bookController.getBestrating);
 
 // get a book
-router.get('/:id', bookController.getBookById);
+router.get("/:id", bookController.getBookById);
 
 // update a book
-router.put('/:id', auth, multer, sharp, bookController.modifyBook);
+router.put("/:id", auth, multer, sharp, bookController.modifyBook);
 
 // delete a book
-router.delete('/:id', auth, bookController.deleteBook);
+router.delete("/:id", auth, bookController.deleteBook);
 
 // create a grade
-router.post('/:id/rating', auth, bookController.createRating);
+router.post("/:id/rating", auth, bookController.createRating);
 
 module.exports = router;

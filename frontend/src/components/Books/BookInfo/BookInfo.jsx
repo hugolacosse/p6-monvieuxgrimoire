@@ -1,7 +1,7 @@
-import * as PropTypes from 'prop-types';
-import React from 'react';
-import styles from '../../../pages/Book/Book.module.css';
-import { displayStars } from '../../../lib/functions';
+import * as PropTypes from "prop-types";
+import React from "react";
+import styles from "../../../pages/Book/Book.module.css";
+import { displayStars } from "../../../lib/functions";
 
 function BookInfo({ book }) {
   return (
@@ -27,10 +27,12 @@ BookInfo.propTypes = {
     year: PropTypes.number,
     imageUrl: PropTypes.string,
     genre: PropTypes.string,
-    ratings: PropTypes.arrayOf(PropTypes.shape({
-      userId: PropTypes.string,
-      grade: PropTypes.number,
-    })),
+    ratings: PropTypes.arrayOf(
+      PropTypes.shape({
+        userId: PropTypes.string,
+        grade: PropTypes.number,
+      }),
+    ),
     averageRating: PropTypes.number,
   }).isRequired,
 };

@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import styles from './UpdateBook.module.css';
-import BookForm from '../../components/Books/BookForm/BookForm';
-import BackArrow from '../../components/BackArrow/BackArrow';
-import { getBook } from '../../lib/common';
-import { APP_ROUTES } from '../../utils/constants';
-import { useUser } from '../../lib/customHooks';
-import bookAdd from '../../images/book_add.jpg';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import styles from "./UpdateBook.module.css";
+import BookForm from "../../components/Books/BookForm/BookForm";
+import BackArrow from "../../components/BackArrow/BackArrow";
+import { getBook } from "../../lib/common";
+import { APP_ROUTES } from "../../utils/constants";
+import { useUser } from "../../lib/customHooks";
+import bookAdd from "../../images/book_add.jpg";
 
 function UpdateBook() {
   const [book, setBook] = useState(null);
@@ -46,7 +46,9 @@ function UpdateBook() {
             <h1>Merci!</h1>
             <p>votre livre a bien été mis à jour</p>
             <img src={bookAdd} alt="Livre mis à jour" />
-            <Link to="/" className="button">Retour à l&apos;accueil</Link>
+            <Link to="/" className="button">
+              Retour à l&apos;accueil
+            </Link>
           </div>
         )}
       </div>

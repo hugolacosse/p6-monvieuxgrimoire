@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getAuthenticatedUser, getBestRatedBooks } from './common';
+import { useState, useEffect } from "react";
+import { getAuthenticatedUser, getBestRatedBooks } from "./common";
 
 // eslint-disable-next-line import/prefer-default-export
 export function useUser() {

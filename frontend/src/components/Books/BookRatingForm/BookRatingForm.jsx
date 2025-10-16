@@ -1,20 +1,18 @@
-import * as PropTypes from 'prop-types';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import styles from './BookRatingForm.module.css';
-import { generateStarsInputs, displayStars } from '../../../lib/functions';
-import { APP_ROUTES } from '../../../utils/constants';
-import { useUser } from '../../../lib/customHooks';
-import { rateBook } from '../../../lib/common';
+import * as PropTypes from "prop-types";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import styles from "./BookRatingForm.module.css";
+import { generateStarsInputs, displayStars } from "../../../lib/functions";
+import { APP_ROUTES } from "../../../utils/constants";
+import { useUser } from "../../../lib/customHooks";
+import { rateBook } from "../../../lib/common";
 
-function BookRatingForm({
-  rating, setRating, userId, setBook, id, userRated,
-}) {
+function BookRatingForm({ rating, setRating, userId, setBook, id, userRated }) {
   const { connectedUser, auth } = useUser();
   const navigate = useNavigate();
   const { register, formState, handleSubmit } = useForm({
-    mode: 'onChange',
+    mode: "onChange",
     defaultValues: {
       rating: 0,
     },
@@ -42,9 +40,11 @@ function BookRatingForm({
   return (
     <div className={styles.BookRatingForm}>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <p>{rating > 0 ? 'Votre Note' : 'Notez cet ouvrage'}</p>
+        <p>{rating > 0 ? "Votre Note" : "Notez cet ouvrage"}</p>
         <div className={styles.Stars}>
-          {!userRated ? generateStarsInputs(rating, register) : displayStars(rating)}
+          {!userRated
+            ? generateStarsInputs(rating, register)
+            : displayStars(rating)}
         </div>
         {!userRated ? <button type="submit">Valider</button> : null}
       </form>
